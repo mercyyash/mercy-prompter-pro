@@ -1,0 +1,8 @@
+{
+ "name":"mercy-prompter","version":"1.0.0","private":true,"type":"module","main":"electron/main.cjs",
+ "scripts":{"dev":"vite","build":"tsc --noEmit && vite build","electron:dev":"vite build && electron .",
+ "dist:win":"vite build && electron-builder --win nsis","cap:sync":"vite build && cap sync android","apk":"npm run cap:sync && cd android && gradlew assembleDebug"},
+ "dependencies":{"@capacitor/android":"^6.1.0","@capacitor/app":"^6.0.0","@capacitor/core":"^6.1.0","mammoth":"^1.8.0","pdfjs-dist":"^4.7.76","react":"^18.3.1","react-dom":"^18.3.1"},
+ "devDependencies":{"@capacitor/cli":"^6.1.0","@types/react":"^18.3.5","@types/react-dom":"^18.3.0","@vitejs/plugin-react":"^4.3.1","autoprefixer":"^10.4.20","electron":"^32.0.0","electron-builder":"^25.0.0","postcss":"^8.4.45","tailwindcss":"^3.4.10","typescript":"^5.5.4","vite":"^5.4.3"},
+ "build":{"appId":"app.mercy.prompter","productName":"MERCY PROMPTER","files":["dist/**","electron/**"],"win":{"target":"nsis"},"nsis":{"oneClick":false,"allowToChangeInstallationDirectory":true}}
+}
