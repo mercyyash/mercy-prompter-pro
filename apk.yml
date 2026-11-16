@@ -1,0 +1,28 @@
+name: Build APK
+on: [push, workflow_dispatch]
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: 17}
+      - uses: android-actions/setup-android@v3
+      - run: npm install
+      - run: npm run build
+      - run: npx cap add android
+      - name: Add native floating overlay + permissions
+        run: |
+          cp native/*.java android/app/src/main/java/app/mercy/prompter/
+          f=android/app/src/main/AndroidManifest.xml
+          P='<uses-permission android:name="android.permission.CAMERA"/><uses-permission android:name="android.permission.RECORD_AUDIO"/><uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/><uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/><uses-permission android:name="android.permission.FOREGROUND_SERVICE"/><uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/><uses-permission android:name="android.permission.POST_NOTIFICATIONS"/><uses-feature android:name="android.hardware.camera" android:required="false"/>'
+          sed -i "s#<application#$P<application#" $f
+          sed -i 's#</application>#<service android:name=".FloatingService" android:exported="false" android:foregroundServiceType="specialUse"/></application>#' $f
+      - run: npx cap sync android
+      - run: cd android && chmod +x gradlew && ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MERCY-PROMPTER-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
